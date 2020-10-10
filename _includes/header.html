@@ -8,8 +8,10 @@
     <a class="site-title" rel="author" href="{{ "/" | relative_url }}"><img src="{{site.baseurl}}/images/logo.jpg" alt="" width="64" height="64" style="margin:10px;10px;10px;10px;"></a>
   
     {%- if titles_size > 0 -%}
+    
       <nav class="site-nav">
         <div class="trigger">
+          <p style="padding-top:12px;">{{ site.title | escape }}</p>
             {% comment %} <a href="{{site.baseurl}}/about/">About</a> {% endcomment %}
         </div>
       </nav>
