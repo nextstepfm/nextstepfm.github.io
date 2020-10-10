@@ -3,7 +3,9 @@
 # To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 
 layout: default
+starring: [7gano,k_katsumi,sonson_twit]
 ---
+
 <div class="home">
   {%- if page.title -%}
     <h1 class="page-heading">{{ page.title }}</h1>
@@ -18,8 +20,12 @@ layout: default
     {% assign posts = site.posts %}
   {% endif %} -->
 
-  <img src="{{site.baseurl}}/images/logo.jpg" alt="" width="128" height="128">
-  <p style="margin-top:20px">k_katsumi, sonson_twit がiOSを中心にお話しするポッドキャスト．ハッシュタグ #nextstepfm でお便り募集しています．オリジナルメンバーは，_katsumi, 7gano, sonson_twitの3人でお話ししていました．</p>
+  {%- for name in page.starring -%}
+    <a href="https://twitter.com/{{name}}"><img class="twitter" src="{{site.baseurl}}/images/{{name}}.jpg" style="margin-left:10px;"/></a>
+  {%- endfor -%}
+
+
+  <p style="margin-top:20px">{{ site.description }}</p>
 
   {%- if posts.size > 0 -%}
     {%- if page.list_title -%}
