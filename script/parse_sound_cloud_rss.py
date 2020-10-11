@@ -2,6 +2,13 @@
 import re
 import xml.etree.ElementTree as ET 
 import datetime
+import os
+import pprint
+import time
+import urllib.error
+import urllib.request
+from urllib.parse import urlparse
+from pathlib import Path
 
 # layout: podcast
 # categories: podcast # podcast
@@ -112,40 +119,77 @@ class Item:
         )
         return markdown_template % data
 
+# /Users/sonson/Downloads/hoge/_posts/
+def main(root, output_path=None):
+    channel = list(filter(lambda x: x.tag == "channel", root))
+    item_array = list(filter(lambda x: x.tag == "item", channel[0]))
 
-# XMLファイルを解析
-# tree = ET.parse('./rss.txt')
-tree = ET.parse('./hoge.rss')  
+    def map_item_2_class(item):
+        new_item = Item()
 
-# XMLを取得
-root = tree.getroot()
+        for entry in item:
+            keys = ["title", "description", "pubDate", "link", "itunes:duration"]
+            props = ["title", "description", "pubdate", "link", "itunes_duration"]
+            prop_dict = {}
+            for (key, prop) in zip(keys, props):
+                prop_dict[key] = prop
+                
+            if entry.tag in keys:
+                setattr(new_item, prop_dict[entry.tag], entry.text)
 
-channel = list(filter(lambda x: x.tag == "channel", root))
-item_array = list(filter(lambda x: x.tag == "item", channel[0]))
+            if entry.tag == "enclosure":
+                enclosure = Enclosure()
+                for key in ["type", "url", "length"]:
+                    setattr(enclosure, key, entry.attrib[key])
+                new_item.enclosure = enclosure
+        return new_item
 
-def map_item_2_class(item):
-    new_item = Item()
+    array = list(map(lambda x: map_item_2_class(x), item_array))
 
-    for entry in item:
-        keys = ["title", "description", "pubDate", "link", "itunes:duration"]
-        props = ["title", "description", "pubdate", "link", "itunes_duration"]
-        prop_dict = {}
-        for (key, prop) in zip(keys, props):
-            prop_dict[key] = prop
-            
-        if entry.tag in keys:
-            setattr(new_item, prop_dict[entry.tag], entry.text)
+    if output_path != None:
+        for a in array:
+            path = "%s/%s.md" % (output_path, a.filename())
+            with open(path, mode='w') as f:
+                f.write(a.output())
+    else:
+        for a in array:
+            print(a)
 
-        if entry.tag == "enclosure":
-            enclosure = Enclosure()
-            for key in ["type", "url", "length"]:
-                setattr(enclosure, key, entry.attrib[key])
-            new_item.enclosure = enclosure
-    return new_item
+def download_audio_file(root, output_path=None):
+    channel = list(filter(lambda x: x.tag == "channel", root))
+    item_array = list(filter(lambda x: x.tag == "item", channel[0]))
 
-array = list(map(lambda x: map_item_2_class(x), item_array))
+    for item in item_array:
+        titles = list(filter(lambda x: x.tag == "title", item))
+        print(titles[0].text)
+        candidates = list(filter(lambda x: x.tag == "enclosure", item))
+        print(candidates[0].attrib['url'])
 
-for a in array:
-    path = "/Users/sonson/Downloads/hoge/_posts/%s.md" % a.filename()
-    with open(path, mode='w') as f:
-        f.write(a.output())
+        url = candidates[0].attrib['url']
+
+        file_name = titles[0].text
+        suffix = Path(urlparse(url).path).suffix
+
+        if output_path != None:
+            destination_path = "%s/%s%s" % (output_path, file_name, suffix)
+            print(destination_path)
+            if not os.path.exists(destination_path):
+                try:
+                    with urllib.request.urlopen(url) as web_file:
+                        data = web_file.read()
+                        with open(destination_path, mode='wb') as local_file:
+                            local_file.write(data)
+                except urllib.error.URLError as e:
+                    print(e)
+
+url = "https://feeds.soundcloud.com/users/soundcloud:users:281879883/sounds.rss"
+
+try:
+    with urllib.request.urlopen(url) as web_file:
+        data = web_file.read()
+        tree = ET.fromstring(data)
+        print(tree)
+        # main(tree)
+        download_audio_file(tree, output_path="/Users/sonson/Documents/podcast")
+except urllib.error.URLError as e:
+    print(e)
