@@ -24,8 +24,7 @@ description: >- # this means to ignore newlines until "baseurl:"
   k_katsumi, sonson_twit がiOSを中心にお話しするポッドキャスト．ハッシュタグ #nextstepfm でお便り募集しています．オリジナルメンバーは，_katsumi, 7gano, sonson_twitでした．
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: jekyllrb
-github_username:  jekyll
+google_analytics: UA-180317705-1
 
 # Build settings
 theme: minima
