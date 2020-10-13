@@ -26,4 +26,8 @@
 {"description":"{{ site.description }}","headline":"nextstep.fm","@type":"WebSite","name":"nextstep.fm","url":"https://nextstep.fm/","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css">
-<link rel="stylesheet" href="/assets/support.css"></head>
+<link rel="stylesheet" href="/assets/support.css">
+{% if site.google_analytics and jekyll.environment == 'production' %}
+{% include google-analytics.html %}
+{% endif %}
+</head>
