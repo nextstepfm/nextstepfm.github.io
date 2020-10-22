@@ -188,8 +188,7 @@ try:
     with urllib.request.urlopen(url) as web_file:
         data = web_file.read()
         tree = ET.fromstring(data)
-        print(tree)
-        # main(tree)
+        main(tree, output_path="/Users/sonson/Documents/code/nextstepfm.github.io/_posts")
         download_audio_file(tree, output_path="/Users/sonson/Documents/podcast")
 except urllib.error.URLError as e:
     print(e)
