@@ -149,8 +149,9 @@ def main(root, output_path=None):
     if output_path != None:
         for a in array:
             path = "%s/%s.md" % (output_path, a.filename())
-            with open(path, mode='w') as f:
-                f.write(a.output())
+            if not os.path.exists(path):
+                with open(path, mode='w') as f:
+                    f.write(a.output())
     else:
         for a in array:
             print(a)
