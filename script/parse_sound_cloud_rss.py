@@ -76,8 +76,22 @@ class Item:
         except:
             return 0
 
+    def get_starring_and_description(self):
+        print(self.description)
+        result = re.search('^Starring\:(.+)\n\n', self.description)
+
+        names = list(map(lambda x: x.strip(), result[1].split(',')))
+
+        print(names)
+
+        body = re.sub('^Starring\:(.+)\n\n', "", self.description)
+
+        return (body, names)
+
     def get_description_for_markdown(self):
-        return re.sub('(https?://[\w/:%#\$&\?\(\)~\.=\+\-]+)', r'[\1](\1)', self.description)
+        print(self.description)
+        temp = re.sub('(https?://[\w/:%#\$&\?\(\)~\.=\+\-]+)', r'[\1](\1)', self.description)
+        return re.sub('(@[0-9a-zA-Z_]+)', r'[\1](https://twitter.com/\1)', temp)
 
     def filename(self):
         date_dt = datetime.datetime.strptime(self.pubdate, '%a, %d %b %Y %H:%M:%S %z')
@@ -91,20 +105,9 @@ class Item:
 
     def output(self):
         
-        # update starring member
-        # start member
-        case1 = [0, 1]
-        # with special guest, tamadeveloper
-        case2 = [18]
-        # with 7gano
-        case3 = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19]
-
-        if self.get_episode_number() in case1:
-            self.starring = ["7gano", "k_katsumi"]
-        elif self.get_episode_number() in case2:
-            self.starring = ["sonson_twit", "7gano", "k_katsumi", "tamadeveloper"]
-        elif self.get_episode_number() in case3:
-            self.starring = ["sonson_twit", "7gano", "k_katsumi"]
+        (body, names) = self.get_starring_and_description()
+        self.description = body
+        self.starring = names
 
         data = (
             "'%s'" % self.get_title_removed_number(),
