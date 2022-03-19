@@ -193,6 +193,6 @@ try:
         data = web_file.read()
         tree = ET.fromstring(data)
         main(tree, output_path="/Users/sonson/Documents/code/nextstepfm.github.io/_posts")
-        download_audio_file(tree, output_path="/Users/sonson/Documents/podcast")
+        download_audio_file(tree, output_path="/Volumes/sonson/podcast")
 except urllib.error.URLError as e:
     print(e)
